@@ -12,6 +12,7 @@ public class RentalService {
     RenterRepository renterRepository = new RenterRepository();
     IncomeRepository incomeRepository = new IncomeRepository();
     UserRepository userRepository = new UserRepository();
+    PrintInfoService printInfoService = new PrintInfoService();
     LocalDate nowLocalDate;
 
     public void reservation(List<String> split) {
@@ -37,7 +38,7 @@ public class RentalService {
 
                 autoMobile.setReserved(true);
                 autoMobile.setRent(false);
-                String printResult = printInfoTypeA(split.get(1), result, split);
+                String printResult = printInfoService.printInfoTypeA(split.get(1), result, split);
 
                 result = printResult + "예약";
                 reservationRepository.saveReservation(split);
@@ -67,7 +68,7 @@ public class RentalService {
 
         List<String> cancel = reservationRepository.cancel(phoneNumber, year, month, day);
         if (cancel != null) {
-            String printResult = printInfoTypeA(cancel.get(1), result, cancel);
+            String printResult = printInfoService.printInfoTypeA(cancel.get(1), result, cancel);
             result = printResult + "취소";
             userRepository.cancel(phoneNumber);
         }
@@ -80,7 +81,7 @@ public class RentalService {
         if (reservationNow != null && reservationNow.get(8).equals(split.get(1))) {
             AutoMobile autoMobile = findAutoMobile(reservationNow);
             if(autoMobile != null && autoMobile.getRent() == false) {
-                String printResult = printInfoTypeB(result, autoMobile, reservationNow);
+                String printResult = printInfoService.printInfoTypeB(result, autoMobile, reservationNow);
                 result = printResult + "대여";
                 reservationRepository.findCheckOutReservation(split);
                 renterRepository.saveRenter(reservationNow);
@@ -100,7 +101,7 @@ public class RentalService {
             int calculatePrice = autoMobile.calculatePrice();
             autoMobile.setPrice(calculatePrice);
             if (autoMobile != null && autoMobile.getRent() == true) {
-                String printResult = printInfoTypeC(result, autoMobile, checkIn);
+                String printResult = printInfoService.printInfoTypeC(result, autoMobile, checkIn, nowLocalDate);
                 result = printResult + "반납";
                 renterRepository.cancelRenter(split);
                 incomeRepository.saveIncome(checkIn);
@@ -117,7 +118,7 @@ public class RentalService {
         for (int i = 0; i < allRenter.size(); i++) {
             AutoMobile autoMobile = findAutoMobile(allRenter.get(i));
             if (autoMobile != null && autoMobile.getReserved() == true) {
-                String printResult = printInfoTypeD(autoMobile.getName(), result, allRenter.get(i));
+                String printResult = printInfoService.printInfoTypeD(autoMobile.getName(), result, allRenter.get(i));
                 result = printResult;
             }
             System.out.println(result);
@@ -129,7 +130,7 @@ public class RentalService {
         for (int i = 0; i < allRenter.size(); i++) {
             String result = "";
             AutoMobile autoMobile = findAutoMobile(allRenter.get(i));
-            String printResult = printInfoTypeB(result, autoMobile, allRenter.get(i));
+            String printResult = printInfoService.printInfoTypeB(result, autoMobile, allRenter.get(i));
             result = printResult;
             System.out.println(result);
         }
@@ -187,81 +188,5 @@ public class RentalService {
             }
         }
         return null;
-    }
-
-    public String printInfoTypeA(String name, String result, List<String> a) {
-        if (name.equals("c")) {
-            result = ("car " + a.get(2) + "cc, " + a.get(3) + "년" + a.get(4) +
-                    "월" + a.get(5) + "일(" + a.get(6) + "일), " +
-                    a.get(7) + "(" + a.get(8) + ") ");
-        } else if (name.equals("s")) {
-            result = ("SUV " + a.get(2) + "hp, " + a.get(3) +"년"+ a.get(4) +
-                    "월"+ a.get(5) + "일(" + a.get(6) + "일), " +
-                    a.get(7) + "(" + a.get(8) + ") ");
-        } else if (name.equals("t")) {
-            result = ("Truck " + a.get(2) + "ton, " + a.get(3) +"년"+ a.get(4) +
-                    "월"+ a.get(5) + "일(" + a.get(6) + "일), " +
-                    a.get(7) + "(" + a.get(8) + ") ");
-        }
-        return result;
-    }
-
-    public String printInfoTypeB(String result, AutoMobile autoMobile, List<String> b) {
-        if (autoMobile.getName().equals("c")) {
-            result = "car " + autoMobile.getUnit() + "cc(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
-                    + "일(" + b.get(6) + "일)," + b.get(7) +
-                    "(" + b.get(8) + ") ";
-        } else if (autoMobile.getName().equals("s")) {
-            result = "SUV " + autoMobile.getUnit() + "hp(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
-                    + "일(" + b.get(6) + "일)," + b.get(7) +
-                    "(" + b.get(8) + ") ";
-        } else if (autoMobile.getName().equals("t")) {
-            result = "Truck " + autoMobile.getUnit() + "ton(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
-                    + "일(" + b.get(6) + "일)," + b.get(7) +
-                    "(" + b.get(8) + ") ";
-        }
-        return result;
-    }
-
-    public String printInfoTypeC(String result, AutoMobile autoMobile, List<String> b) {
-        LocalDate now = nowLocalDate;
-        int day = now.getDayOfMonth() - autoMobile.getStartLocalDate().getDayOfMonth() + 1;
-        if (autoMobile.getName().equals("c")) {
-            result = "car " + autoMobile.getUnit() + "cc(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
-                    + "일(" + day + "일)," + b.get(7) +
-                    "(" + b.get(8) + "), ";
-        } else if (autoMobile.getName().equals("s")) {
-            result = "SUV " + autoMobile.getUnit() + "hp(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
-                    + "일(" + day + "일)," + b.get(7) +
-                    "(" + b.get(8) + "), ";
-        } else if (autoMobile.getName().equals("t")) {
-            result = "Truck " + autoMobile.getUnit() + "ton(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
-                    + "일(" + day + "일)," + b.get(7) +
-                    "(" + b.get(8) + "), ";
-        }
-        return result;
-    }
-
-    public String printInfoTypeD(String name, String result, List<String> a) {
-        if (name.equals("c")) {
-            result = ("car " + a.get(2) + "cc, " + a.get(3) + "년" + a.get(4) +
-                    "월" + a.get(5) + "일(" + a.get(6) + "), " +
-                    a.get(7) + ", " + a.get(8));
-        } else if (name.equals("s")) {
-            result = ("SUV " + a.get(2) + "hp, " + a.get(3) +"년"+ a.get(4) +
-                    "월"+ a.get(5) + "일(" + a.get(6) + "), " +
-                    a.get(7) + ", " + a.get(8));
-        } else if (name.equals("t")) {
-            result = ("Truck " + a.get(2) + "ton, " + a.get(3) +"년"+ a.get(4) +
-                    "월"+ a.get(5) + "일(" + a.get(6) + "일), " +
-                    a.get(7) + ", " + a.get(8));
-        }
-        return result;
     }
 }
