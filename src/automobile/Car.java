@@ -25,7 +25,7 @@ public class Car implements AutoMobile{
     @Override
     public int calculatePrice() {
         Period period = startDay.until(endDay);
-        day = period.getDays();
+        day = period.getDays() + 1;
         if (cc < 1000) {
             if (day <= 5) {
                 pay = day * 30000;
@@ -122,5 +122,10 @@ public class Car implements AutoMobile{
     @Override
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    @Override
+    public int getDay() {
+        return day;
     }
 }

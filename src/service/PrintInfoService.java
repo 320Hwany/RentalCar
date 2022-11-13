@@ -3,6 +3,7 @@ package service;
 import automobile.AutoMobile;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 public class PrintInfoService {
@@ -47,20 +48,21 @@ public class PrintInfoService {
     public String printInfoTypeC(String result, AutoMobile autoMobile, List<String> b,
                                  LocalDate localDate) {
         LocalDate now = localDate;
-        int day = now.getDayOfMonth() - autoMobile.getStartLocalDate().getDayOfMonth() + 1;
+        Period period = Period.between(autoMobile.getStartLocalDate(), now);
+        int day = period.getDays();
         if (autoMobile.getName().equals("c")) {
             result = "car " + autoMobile.getUnit() + "cc(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
+                   now.getYear() + "년 " + now.getMonthValue() + "월 " + now.getDayOfMonth()
                     + "일(" + day + "일)," + b.get(7) +
                     "(" + b.get(8) + "), ";
         } else if (autoMobile.getName().equals("s")) {
             result = "SUV " + autoMobile.getUnit() + "hp(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
+                    now.getYear() + "년 " + now.getMonthValue()  + "월 " + now.getDayOfMonth()
                     + "일(" + day + "일)," + b.get(7) +
                     "(" + b.get(8) + "), ";
         } else if (autoMobile.getName().equals("t")) {
             result = "Truck " + autoMobile.getUnit() + "ton(" + autoMobile.getNumber() + "), " +
-                    b.get(3) + "년 " + b.get(4) + "월 " + b.get(5)
+                    now.getYear() + "년 " + now.getMonthValue()  + "월 " + now.getDayOfMonth()
                     + "일(" + day + "일)," + b.get(7) +
                     "(" + b.get(8) + "), ";
         }

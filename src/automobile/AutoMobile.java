@@ -32,6 +32,8 @@ public interface AutoMobile {
     int getPrice();
 
     void setPrice(int price);
+
+    int getDay();
 }
 
 

@@ -1,9 +1,12 @@
 package service;
 
 import automobile.AutoMobile;
+import exception.CheckDateOrder;
 import repository.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RentalService {
@@ -12,6 +15,7 @@ public class RentalService {
     RenterRepository renterRepository = new RenterRepository();
     IncomeRepository incomeRepository = new IncomeRepository();
     UserRepository userRepository = new UserRepository();
+    SortRepository sortRepository = new SortRepository();
     PrintInfoService printInfoService = new PrintInfoService();
     LocalDate nowLocalDate;
 
@@ -104,7 +108,7 @@ public class RentalService {
                 String printResult = printInfoService.printInfoTypeC(result, autoMobile, checkIn, nowLocalDate);
                 result = printResult + "반납";
                 renterRepository.cancelRenter(split);
-                incomeRepository.saveIncome(checkIn);
+                incomeRepository.saveIncome(checkIn, nowLocalDate);
                 userRepository.cancel(split.get(1));
                 autoMobile.setRent(false);
             }
@@ -112,22 +116,27 @@ public class RentalService {
         System.out.println(result);
     }
 
-    public void viewAllReservedVehicles(List<String> split) {
+    public void viewAllReservedVehicles() {
+        sortRepository.clear();
+        List<List<String>> allReservation = reservationRepository.findAllReservation();
+        List<List<String>> allSortList = makeSortList(allReservation);
         String result = "";
-        List<List<String>> allRenter = reservationRepository.findAllReservation();
-        for (int i = 0; i < allRenter.size(); i++) {
-            AutoMobile autoMobile = findAutoMobile(allRenter.get(i));
+        for (int i = 0; i < allSortList.size(); i++) {
+            AutoMobile autoMobile = findAutoMobile(allSortList.get(i));
             if (autoMobile != null && autoMobile.getReserved() == true) {
-                String printResult = printInfoService.printInfoTypeD(autoMobile.getName(), result, allRenter.get(i));
+                String printResult =
+                        printInfoService.printInfoTypeD(autoMobile.getName(), result, allSortList.get(i));
                 result = printResult;
             }
             System.out.println(result);
         }
     }
 
-    public void viewAllRentedVehicles(List<String> split) {
+    public void viewAllRentedVehicles() {
+        sortRepository.clear();
         List<List<String>> allRenter = renterRepository.findAllRenter();
-        for (int i = 0; i < allRenter.size(); i++) {
+        List<List<String>> allSortList = makeSortList(allRenter);
+        for (int i = 0; i < allSortList.size(); i++) {
             String result = "";
             AutoMobile autoMobile = findAutoMobile(allRenter.get(i));
             String printResult = printInfoService.printInfoTypeB(result, autoMobile, allRenter.get(i));
@@ -141,6 +150,7 @@ public class RentalService {
         int year = nowLocalDate.getYear();
         int month = nowLocalDate.getMonthValue();
         int totalPrice = 0;
+
         System.out.println(year + "년 " + month + "월 대여 수입");
         for (int i = 0; i < allIncome.size(); i++) {
             AutoMobile autoMobile = findAutoMobile(allIncome.get(i));
@@ -148,26 +158,26 @@ public class RentalService {
                     == nowLocalDate.getMonthValue()) {
                 System.out.println("car " + autoMobile.getUnit() + "cc, " +
                         allIncome.get(i).get(3) + "년" + allIncome.get(i).get(4) + "월" +
-                        allIncome.get(i).get(5) + "일(" + allIncome.get(i).get(6) + "일), " +
+                        allIncome.get(i).get(5) + "일(" + autoMobile.getDay() + "일), " +
                         autoMobile.getPrice() + "원");
                 totalPrice += autoMobile.getPrice();
             } else if (autoMobile.getName().equals("s")  && Integer.valueOf(allIncome.get(i).get(4))
                     == nowLocalDate.getMonthValue()) {
                 System.out.println("SUV " + autoMobile.getUnit() + "hp, " +
                         allIncome.get(i).get(3) + "년" + allIncome.get(i).get(4) + "월" +
-                        allIncome.get(i).get(5) + "일(" + allIncome.get(i).get(6) + "일), " +
+                        allIncome.get(i).get(5) + "일(" + autoMobile.getDay() + "일), " +
                         autoMobile.getPrice() + "원");
                 totalPrice += autoMobile.getPrice();
             } else if (autoMobile.getName().equals("t")  && Integer.valueOf(allIncome.get(i).get(4))
                     == nowLocalDate.getMonthValue()) {
                 System.out.println("truck " + autoMobile.getUnit() + "hp, " +
                         allIncome.get(i).get(3) + "년" + allIncome.get(i).get(4) + "월" +
-                        allIncome.get(i).get(5) + "일(" + allIncome.get(i).get(6) + "일), " +
+                        allIncome.get(i).get(5) + "일(" + autoMobile.getDay() + "일), " +
                         autoMobile.getPrice() + "원");
                 totalPrice += autoMobile.getPrice();
             }
         }
-        System.out.println("총 수입 : " + totalPrice);
+        System.out.println("총 수입 : " + totalPrice + "원");
     }
 
     public void setDate(List<String> split) {
@@ -176,7 +186,10 @@ public class RentalService {
         Integer day = Integer.valueOf(split.get(3));
 
         LocalDate localDate = LocalDate.of(year, month, day);
-        nowLocalDate = localDate;
+        CheckDateOrder checkDateOrder = new CheckDateOrder();
+        if (checkDateOrder.checkOrder(localDate, nowLocalDate)) {
+            nowLocalDate = localDate;
+        }
     }
 
     public AutoMobile findAutoMobile(List<String> reservationList) {
@@ -188,5 +201,17 @@ public class RentalService {
             }
         }
         return null;
+    }
+
+    private List<List<String>> makeSortList(List<List<String>> allReservation) {
+        for (int i = 0; i < allReservation.size(); i++) {
+            AutoMobile autoMobile = findAutoMobile(allReservation.get(i));
+            if (autoMobile != null && autoMobile.getReserved() == true) {
+                sortRepository.add(allReservation.get(i));
+                sortRepository.sort();
+            }
+        }
+        List<List<String>> allSortList = sortRepository.findAll();
+        return allSortList;
     }
 }

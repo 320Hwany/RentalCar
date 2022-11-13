@@ -24,7 +24,7 @@ public class SUV implements AutoMobile{
     @Override
     public int calculatePrice() {
         Period period = startDay.until(endDay);
-        day = period.getDays();
+        day = period.getDays() + 1;
         if (hp < 150) {
             if (day <= 5) {
                 pay = day * 20000;
@@ -121,5 +121,10 @@ public class SUV implements AutoMobile{
     @Override
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    @Override
+    public int getDay() {
+        return day;
     }
 }

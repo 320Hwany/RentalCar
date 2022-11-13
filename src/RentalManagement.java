@@ -1,7 +1,10 @@
 import automobile.Car;
 import automobile.SUV;
 import automobile.Truck;
+import exception.CheckAutomobileValid;
+import exception.CommandException;
 import repository.AutomobileRepository;
+import exception.CheckDateValid;
 import service.RentalService;
 
 import java.io.File;
@@ -15,7 +18,7 @@ public class RentalManagement {
     public static void main(String[] args) throws FileNotFoundException {
 
         RentalService rentalService = new RentalService();
-
+        CheckDateValid checkDateValid = new CheckDateValid();
         AutomobileRepository automobileRepository = new AutomobileRepository();
 
         Scanner scanner1 = new Scanner(new File("rentalcars.txt"));
@@ -42,25 +45,34 @@ public class RentalManagement {
 
         Scanner scanner2 = new Scanner(new File("commands.txt"));
         while (scanner2.hasNextLine()) {
+
             String str = scanner2.nextLine();
             List<String> split = List.of(str.split(" "));
-
-            if (split.get(0).equals("r")) {
-                rentalService.reservation(split);
-            } else if (split.get(0).equals("c")) {
-                rentalService.cancelReservation(split);
-            } else if (split.get(0).equals("o")) {
-                rentalService.checkOut(split);
-            } else if (split.get(0).equals("i")) {
-                rentalService.checkIn(split);
-            }  else if (split.get(0).equals("v")) {
-                rentalService.viewAllReservedVehicles(split);
-            } else if (split.get(0).equals("a")) {
-                rentalService.viewAllRentedVehicles(split);
-            } else if (split.get(0).equals("p")) {
-                rentalService.income();
-            } else if (split.get(0).equals("d")) {
-                rentalService.setDate(split);
+            String command = split.get(0);
+            boolean checkDate = checkDateValid.checkDate(split);
+            boolean checkCommand = CommandException.checkCommand(command);
+            boolean checkAutomobile = CheckAutomobileValid.checkAutomobile(split);
+            if (checkDate && checkCommand && checkAutomobile) {
+                switch (command) {
+                    case "r" : rentalService.reservation(split);
+                        break;
+                    case "c" : rentalService.cancelReservation(split);
+                        break;
+                    case "o" : rentalService.checkOut(split);
+                        break;
+                    case "i" : rentalService.checkIn(split);
+                        break;
+                    case "v" : rentalService.viewAllReservedVehicles();
+                        break;
+                    case "a" : rentalService.viewAllRentedVehicles();
+                        break;
+                    case "p" : rentalService.income();
+                        break;
+                    case "d" : rentalService.setDate(split);
+                        break;
+                    default: System.out.println("올바르지 않은 명령어입니다. 다시 입력해주세요");
+                        break;
+                }
             }
         }
     }

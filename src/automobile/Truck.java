@@ -54,7 +54,7 @@ public class Truck implements AutoMobile {
     @Override
     public int calculatePrice() {
         Period period = startDay.until(endDay);
-        day = period.getDays();
+        day = period.getDays() + 1;
         if (ton < 1) {
             pay = price * 20000;
         } else if (ton >= 1 && ton < 4) {
@@ -103,5 +103,10 @@ public class Truck implements AutoMobile {
     @Override
     public void setEndLocalDate(LocalDate endLocalDate) {
         this.endDay = endLocalDate;
+    }
+
+    @Override
+    public int getDay() {
+        return day;
     }
 }
