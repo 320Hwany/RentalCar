@@ -5,14 +5,12 @@ import exception.CheckDateOrder;
 import repository.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RentalService {
 
     ReservationRepository reservationRepository = new ReservationRepository();
-    RenterRepository renterRepository = new RenterRepository();
+    RentalRepository rentalRepository = new RentalRepository();
     IncomeRepository incomeRepository = new IncomeRepository();
     UserRepository userRepository = new UserRepository();
     SortRepository sortRepository = new SortRepository();
@@ -88,7 +86,7 @@ public class RentalService {
                 String printResult = printInfoService.printInfoTypeB(result, autoMobile, reservationNow);
                 result = printResult + "대여";
                 reservationRepository.findCheckOutReservation(split);
-                renterRepository.saveRenter(reservationNow);
+                rentalRepository.saveRenter(reservationNow);
                 autoMobile.setRent(true);
                 autoMobile.setReserved(true);
             }
@@ -98,7 +96,7 @@ public class RentalService {
 
     public void checkIn(List<String> split) {
         String result = "반납 불가 차량입니다";
-        List<String> checkIn = renterRepository.findCheckIn(split);
+        List<String> checkIn = rentalRepository.findCheckIn(split);
         if (checkIn != null) {
             AutoMobile autoMobile = findAutoMobile(checkIn);
             autoMobile.setEndLocalDate(nowLocalDate);
@@ -107,7 +105,7 @@ public class RentalService {
             if (autoMobile != null && autoMobile.getRent() == true) {
                 String printResult = printInfoService.printInfoTypeC(result, autoMobile, checkIn, nowLocalDate);
                 result = printResult + "반납";
-                renterRepository.cancelRenter(split);
+                rentalRepository.cancelRenter(split);
                 incomeRepository.saveIncome(checkIn, nowLocalDate);
                 userRepository.cancel(split.get(1));
                 autoMobile.setRent(false);
@@ -134,7 +132,7 @@ public class RentalService {
 
     public void viewAllRentedVehicles() {
         sortRepository.clear();
-        List<List<String>> allRenter = renterRepository.findAllRenter();
+        List<List<String>> allRenter = rentalRepository.findAllRenter();
         List<List<String>> allSortList = makeSortList(allRenter);
         for (int i = 0; i < allSortList.size(); i++) {
             String result = "";

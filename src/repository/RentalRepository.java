@@ -3,7 +3,7 @@ package repository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RenterRepository {
+public class RentalRepository {
 
     public static List<List<String>> renterRepository = new ArrayList<>();
 

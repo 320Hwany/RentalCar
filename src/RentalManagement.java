@@ -7,21 +7,28 @@ import repository.AutomobileRepository;
 import exception.CheckDateValid;
 import service.RentalService;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
+import java.util.SimpleTimeZone;
 
 public class RentalManagement {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         RentalService rentalService = new RentalService();
         CheckDateValid checkDateValid = new CheckDateValid();
         AutomobileRepository automobileRepository = new AutomobileRepository();
 
-        Scanner scanner1 = new Scanner(new File("rentalcars.txt"));
+        InputStream resourceAsStream = RentalManagement.class.getResourceAsStream("resources/rentalcars.txt");
+
+        File tempFile = File.createTempFile(String.valueOf(resourceAsStream.hashCode()), ".txt");
+        copyInputStreamToFile(resourceAsStream, tempFile);
+        Scanner scanner1 = new Scanner(tempFile);
         while (scanner1.hasNextLine()) {
             String str = scanner1.nextLine();
             List<String> split = List.of(str.split(" "));
@@ -43,7 +50,11 @@ public class RentalManagement {
             }
         }
 
-        Scanner scanner2 = new Scanner(new File("commands.txt"));
+        InputStream resourceAsStream1 = RentalManagement.class.getResourceAsStream("resources/commands.txt");
+
+        File tempFile1 = File.createTempFile(String.valueOf(resourceAsStream1.hashCode()), ".txt");
+        copyInputStreamToFile(resourceAsStream1, tempFile1);
+        Scanner scanner2 = new Scanner(tempFile1);
         while (scanner2.hasNextLine()) {
 
             String str = scanner2.nextLine();
@@ -74,6 +85,22 @@ public class RentalManagement {
                         break;
                 }
             }
+        }
+    }
+
+    private static void copyInputStreamToFile(InputStream inputStream, File file) {
+
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
