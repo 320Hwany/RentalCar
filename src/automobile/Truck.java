@@ -9,7 +9,6 @@ public class Truck implements AutoMobile {
     private int ton;
     private int price;
     private int day;
-    private int pay;
 
     private boolean rent = false;
     private boolean reserved = false;
@@ -56,13 +55,13 @@ public class Truck implements AutoMobile {
         Period period = startDay.until(endDay);
         day = period.getDays() + 1;
         if (ton < 1) {
-            pay = price * 20000;
+            price = price * 20000;
         } else if (ton >= 1 && ton < 4) {
-            pay = price * 40000;
+            price = price * 40000;
         } else if (ton >= 4) {
-            pay = price * 60000;
+            price = price * 60000;
         }
-        return pay;
+        return price;
     }
 
     @Override

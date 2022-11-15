@@ -9,7 +9,6 @@ public class Car implements AutoMobile{
     private int cc;
     private int price;
     private int day;
-    private int pay;
 
     private boolean rent = false;
 
@@ -28,30 +27,30 @@ public class Car implements AutoMobile{
         day = period.getDays() + 1;
         if (cc < 1000) {
             if (day <= 5) {
-                pay = day * 30000;
+                price = day * 30000;
             } else {
-                pay = (5 * 30000) + ((day - 5) * 20000);
+                price = (5 * 30000) + ((day - 5) * 20000);
             }
         } else if (cc >= 1000 && cc <2000) {
             if (day <= 5) {
-                pay = day * 40000;
+                price = day * 40000;
             } else {
-                pay = (5 * 40000) + ((day - 5) * 30000);
+                price = (5 * 40000) + ((day - 5) * 30000);
             }
         } else if (cc >= 2000 && cc <3000) {
             if (day <= 5) {
-                pay = day * 50000;
+                price = day * 50000;
             } else {
-                pay = (5 * 50000) + ((day - 5) * 40000);
+                price = (5 * 50000) + ((day - 5) * 40000);
             }
         } else if (cc >= 3000) {
             if (day <= 5) {
-                pay = day * 60000;
+                price = day * 60000;
             } else {
-                pay = (5 * 60000) + ((day - 5) * 60000);
+                price = (5 * 60000) + ((day - 5) * 60000);
             }
         }
-        return pay;
+        return price;
     }
 
     @Override

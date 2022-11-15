@@ -9,7 +9,6 @@ public class SUV implements AutoMobile{
     private int hp;
     private int price;
     private int day;
-    private int pay;
 
     private boolean rent = false;
     private boolean reserved = false;
@@ -27,30 +26,30 @@ public class SUV implements AutoMobile{
         day = period.getDays() + 1;
         if (hp < 150) {
             if (day <= 5) {
-                pay = day * 20000;
+                price = day * 20000;
             } else {
-                pay = (5 * 20000) + ((day - 5) * 10000);
+                price = (5 * 20000) + ((day - 5) * 10000);
             }
         } else if (hp >= 150 && hp <250) {
             if (day <= 5) {
-                pay = day * 40000;
+                price = day * 40000;
             } else {
-                pay = (5 * 40000) + ((day - 5) * 30000);
+                price = (5 * 40000) + ((day - 5) * 30000);
             }
         } else if (hp >= 250 && hp <350) {
             if (day <= 5) {
-                pay = day * 60000;
+                price = day * 60000;
             } else {
-                pay = (5 * 60000) + ((day - 5) * 50000);
+                price = (5 * 60000) + ((day - 5) * 50000);
             }
         } else if (hp >= 350) {
             if (day <= 5) {
-                pay = day * 80000;
+                price = day * 80000;
             } else {
-                pay = (5 * 80000) + ((day - 5) * 70000);
+                price = (5 * 80000) + ((day - 5) * 70000);
             }
         }
-        return pay;
+        return price;
     }
 
     @Override
