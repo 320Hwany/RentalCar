@@ -30,6 +30,17 @@ public class CheckDateValid {
                 System.out.println("유효하지 않은 날짜입니다.");
                 return false;
             }
+        } else if (split.get(0).equals("d")) {
+            String year = split.get(1);
+            String month = split.get(2);
+            String day = split.get(3);
+            try {
+                LocalDate localDate =
+                        LocalDate.of(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
+            } catch (DateTimeException e) {
+                System.out.println("유효하지 않은 날짜입니다.");
+                return false;
+            }
         }
         return true;
     }
