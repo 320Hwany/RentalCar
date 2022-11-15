@@ -187,6 +187,8 @@ public class RentalService {
         CheckDateOrder checkDateOrder = new CheckDateOrder();
         if (checkDateOrder.checkOrder(localDate, nowLocalDate)) {
             nowLocalDate = localDate;
+            System.out.println("현재 날짜를 " + year + "년 " + month + "월 " +
+                    day + "일로 설정");
         }
     }
 

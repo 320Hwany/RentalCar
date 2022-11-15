@@ -23,11 +23,11 @@ public class RentalManagement {
         RentalService rentalService = new RentalService();
         CheckDateValid checkDateValid = new CheckDateValid();
         AutomobileRepository automobileRepository = new AutomobileRepository();
-
         InputStream resourceAsStream = RentalManagement.class.getResourceAsStream("resources/rentalcars.txt");
 
         File tempFile = File.createTempFile(String.valueOf(resourceAsStream.hashCode()), ".txt");
         copyInputStreamToFile(resourceAsStream, tempFile);
+
         Scanner scanner1 = new Scanner(tempFile);
         while (scanner1.hasNextLine()) {
             String str = scanner1.nextLine();
@@ -50,14 +50,12 @@ public class RentalManagement {
             }
         }
 
-        InputStream resourceAsStream1 = RentalManagement.class.getResourceAsStream("resources/commands.txt");
+        System.out.println("명령어를 입력해주세요 : ");
 
-        File tempFile1 = File.createTempFile(String.valueOf(resourceAsStream1.hashCode()), ".txt");
-        copyInputStreamToFile(resourceAsStream1, tempFile1);
-        Scanner scanner2 = new Scanner(tempFile1);
-        while (scanner2.hasNextLine()) {
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
 
-            String str = scanner2.nextLine();
+            String str = scanner.nextLine();
             List<String> split = List.of(str.split(" "));
             String command = split.get(0);
             boolean checkDate = checkDateValid.checkDate(split);
