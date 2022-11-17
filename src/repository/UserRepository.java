@@ -28,7 +28,7 @@ public class UserRepository {
             if (userRepository.get(key) != null) {
                 LocalDate reservedLocalDate = userRepository.get(key);
                 Period period = Period.between(reservedLocalDate, localDate);
-                if (period.getDays() >= plusDay) {
+                if (period.getDays() >= plusDay - 1) {
                     userRepository.remove(key);
                 }
             }
